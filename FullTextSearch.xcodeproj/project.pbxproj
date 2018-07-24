@@ -11,6 +11,10 @@
 		494C9F3221066B51003097F7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 494C9F3121066B51003097F7 /* Assets.xcassets */; };
 		494C9F3521066B51003097F7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 494C9F3321066B51003097F7 /* MainMenu.xib */; };
 		494C9F4121066B51003097F7 /* FullTextSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494C9F4021066B51003097F7 /* FullTextSearchTests.swift */; };
+		494C9F4E21066E2D003097F7 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 494C9F4C21066D2E003097F7 /* SQLite.framework */; };
+		494C9F4F210670E5003097F7 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 494C9F4C21066D2E003097F7 /* SQLite.framework */; };
+		494C9F50210670E5003097F7 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 494C9F4C21066D2E003097F7 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4970ABCA2106792600AF7D13 /* SQLite.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4970ABC92106792600AF7D13 /* SQLite.framework.dSYM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +27,30 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		494C9F51210670E5003097F7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				494C9F50210670E5003097F7 /* SQLite.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4970ABC82106790E00AF7D13 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4970ABCA2106792600AF7D13 /* SQLite.framework.dSYM in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		494C9F2C21066B4F003097F7 /* FullTextSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FullTextSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		494C9F2F21066B4F003097F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -33,6 +61,8 @@
 		494C9F3C21066B51003097F7 /* FullTextSearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FullTextSearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		494C9F4021066B51003097F7 /* FullTextSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullTextSearchTests.swift; sourceTree = "<group>"; };
 		494C9F4221066B51003097F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		494C9F4C21066D2E003097F7 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = FullTextSearch.xcodeproj/Carthage/Build/Mac/SQLite.framework; sourceTree = "<group>"; };
+		4970ABC92106792600AF7D13 /* SQLite.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SQLite.framework.dSYM; path = FullTextSearch.xcodeproj/Carthage/Build/Mac/SQLite.framework.dSYM; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				494C9F4F210670E5003097F7 /* SQLite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				494C9F4E21066E2D003097F7 /* SQLite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,9 +88,11 @@
 		494C9F2321066B4F003097F7 = {
 			isa = PBXGroup;
 			children = (
+				4970ABC92106792600AF7D13 /* SQLite.framework.dSYM */,
 				494C9F2E21066B4F003097F7 /* FullTextSearch */,
 				494C9F3F21066B51003097F7 /* FullTextSearchTests */,
 				494C9F2D21066B4F003097F7 /* Products */,
+				494C9F4B21066D2E003097F7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,6 +126,14 @@
 			path = FullTextSearchTests;
 			sourceTree = "<group>";
 		};
+		494C9F4B21066D2E003097F7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				494C9F4C21066D2E003097F7 /* SQLite.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,6 +144,8 @@
 				494C9F2821066B4F003097F7 /* Sources */,
 				494C9F2921066B4F003097F7 /* Frameworks */,
 				494C9F2A21066B4F003097F7 /* Resources */,
+				494C9F51210670E5003097F7 /* Embed Frameworks */,
+				4970ABC82106790E00AF7D13 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -347,6 +391,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 49PF4HXKBW;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FullTextSearch.xcodeproj/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = FullTextSearch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -366,6 +414,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 49PF4HXKBW;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FullTextSearch.xcodeproj/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = FullTextSearch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -381,10 +433,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 49PF4HXKBW;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FullTextSearch.xcodeproj/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = FullTextSearchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -402,10 +457,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 49PF4HXKBW;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/FullTextSearch.xcodeproj/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = FullTextSearchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
