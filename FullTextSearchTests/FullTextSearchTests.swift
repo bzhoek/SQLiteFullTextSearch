@@ -4,8 +4,22 @@ import SQLite
 
 class FullTextSearchTests: XCTestCase {
 
+  var db: Connection!
+  var folder: URL!
+
   override func setUp() {
     super.setUp()
+    do {
+      folder = URL(fileURLWithPath: NSTemporaryDirectory())
+      let url = folder.appendingPathComponent("test.sqlite3")
+      if FileManager.default.fileExists(atPath: url.path) {
+        try FileManager.default.removeItem(at: url)
+      }
+      print("\(url.path)")
+      db = try Connection(url.path)
+    } catch {
+      XCTFail(error.localizedDescription)
+    }
   }
 
   override func tearDown() {
@@ -26,9 +40,7 @@ class FullTextSearchTests: XCTestCase {
     return db
   }
 
-  func testUpdatingIndexer() throws {
-    let db = try getConnection()
-
+  func update(_ path: String, connection: Connection) throws {
     let filenames = Table("filenames")
     let id = Expression<Int64>("id")
     let filename = Expression<String>("filename")
@@ -43,7 +55,6 @@ class FullTextSearchTests: XCTestCase {
     })
 
     let emails = VirtualTable("emails")
-    let rid = Expression<Int64>("rowid")
     let subject = Expression<String>("subject")
     let body = Expression<String>("body")
 
@@ -56,23 +67,31 @@ class FullTextSearchTests: XCTestCase {
 
     try db.run(emails.create(.FTS4(config), ifNotExists: true))
 
-    let path = "/Users/bas/Dropbox/Markdone"
     if let enumerator = FileManager.default.enumerator(atPath: path) {
       while let file = enumerator.nextObject() as? String {
         if file.hasSuffix(".md") {
+          print(file)
           let attributes = try FileManager.default.attributesOfItem(atPath: "\(path)/\(file)")
           let lastModified = attributes[.modificationDate] as! Date
 
           let filter = filenames.filter(filename == file)
-          if let record = try db.pluck(filter) {
 
+          let indexer = { () -> Int64 in
+            return try self.db.run(emails.insert(
+                subject <- file,
+                body <- try String(contentsOfFile: "\(path)/\(file)")
+            ))
+          }
+
+          if let record = try db.pluck(filter) {
             let thisModified = record[modified]
+            let thatId = record[ftsid]
             let order = Calendar.current.compare(thisModified, to: lastModified, toGranularity: .second)
 
             if order != .orderedSame {
               print("UPDATED \(lastModified) > \(record[modified])")
               let text = try String(contentsOfFile: "\(path)/\(file)")
-              try db.run(emails.filter(rowid == ftsid).update(
+              try db.run(emails.filter(rowid == thatId).update(
                   subject <- file,
                   body <- text
               ))
@@ -80,26 +99,54 @@ class FullTextSearchTests: XCTestCase {
             }
 
             if record[ftsid] == 0 {
-              let text = try String(contentsOfFile: "\(path)/\(file)")
-              let rowid = try db.run(emails.insert(
-                  subject <- file,
-                  body <- text
-              ))
-              try db.run(filter.update(ftsid <- rowid))
+              try self.db.run(filter.update(ftsid <- indexer()))
             }
           } else {
-            try db.run(filenames.insert(filename <- file, modified <- lastModified, ftsid <- 0))
+            try db.run(filenames.insert(filename <- file, modified <- lastModified, ftsid <- indexer()))
           }
         }
       }
     }
 
-    let wonderfulEmails = emails.filter(emails.match("wonder*"))
-    XCTAssertEqual(1, try! db.scalar(emails.filter(emails.match("wonder*")).count))
+    for record in try db.prepare(filenames) {
+      let url = folder.appendingPathComponent(record[filename])
+      if !FileManager.default.fileExists(atPath: url.path) {
+        print("REMOVED \(url.path)")
+        try db.run(emails.filter(rowid == record[ftsid]).delete())
+        try db.run(filenames.filter(rowid == record[id]).delete())
+      }
 
-    for email in try db.prepare(wonderfulEmails) {
-      print("RESULT \(email)")
     }
+  }
+
+  func testMarkdoneFolder() throws {
+    let path = "/Users/bas/Dropbox/Markdone"
+    try update(path, connection: db)
+  }
+
+  func testIndexUpdates() throws {
+    let db = try getConnection()
+    let emails = VirtualTable("emails")
+    XCTAssertEqual(1, try! db.scalar(emails.filter(emails.match("wonder*")).count))
+  }
+
+  func testBundle() throws {
+    let emails = VirtualTable("emails")
+
+    try "Lorum".write(to: folder.appendingPathComponent("ADDED.md"), atomically: true, encoding: .utf8)
+    try "Ipsum".write(to: folder.appendingPathComponent("CHANGED.md"), atomically: true, encoding: .utf8)
+    try FileManager.default.setAttributes([FileAttributeKey.modificationDate: Date(timeIntervalSinceNow: -1)], ofItemAtPath: folder.appendingPathComponent("CHANGED.md").path)
+    try "Dolor".write(to: folder.appendingPathComponent("REMOVED.md"), atomically: true, encoding: .utf8)
+    try update(folder.path, connection: db)
+    XCTAssertEqual(1, try! db.scalar(emails.filter(emails.match("ipsum")).count))
+
+    try "Sit".write(to: folder.appendingPathComponent("CHANGED.md"), atomically: true, encoding: .utf8)
+    try update(folder.path, connection: db)
+    XCTAssertEqual(1, try! db.scalar(emails.filter(emails.match("sit")).count))
+
+    try FileManager.default.removeItem(at: folder.appendingPathComponent("REMOVED.md"))
+    try update(folder.path, connection: db)
+    XCTAssertEqual(0, try! db.scalar(emails.filter(emails.match("dolor")).count), "Removed file contents still found")
   }
 
   func testWithCustomTokenizer() throws {
