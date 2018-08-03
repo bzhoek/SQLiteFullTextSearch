@@ -1,1 +1,2 @@
 github "stephencelis/SQLite.swift" ~> 0.11.5
+github "https://github.com/dropbox/SwiftyDropbox" ~> 4.6.0

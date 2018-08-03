@@ -1,5 +1,6 @@
 import XCTest
 import SQLite
+import SwiftyDropbox
 @testable import FullTextSearch
 
 class Indexer {
@@ -110,6 +111,24 @@ class FullTextSearchTests: XCTestCase {
 
   override func tearDown() {
     super.tearDown()
+  }
+
+  func testDropboxClient() {
+    let expectation = XCTestExpectation(description: "Download apple.com home page")
+
+    DropboxClientsManager.setupWithAppKeyDesktop("hdv7zm68wg4btzx")
+    let client = DropboxClient(accessToken: "")
+    client.files.createFolderV2(path: "/Markdone.test/account").response { response, error in
+      if let response = response {
+        print(response)
+      } else if let error = error {
+        XCTFail(error.description)
+      }
+      expectation.fulfill()
+    }
+
+    wait(for: [expectation], timeout: 10.0)
+    
   }
 
   func testMarkdoneFolder() throws {
