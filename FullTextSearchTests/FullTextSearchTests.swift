@@ -93,17 +93,27 @@ class FullTextSearchTests: XCTestCase {
 
   var folder: URL!
   var indexer: Indexer!
+  var settings: DropboxSettings!
+
+  struct DropboxSettings: Decodable {
+    var key: String
+    var token: String
+  }
 
   override func setUp() {
     super.setUp()
     do {
       folder = URL(fileURLWithPath: NSTemporaryDirectory())
-      let url = folder.appendingPathComponent("test.sqlite3")
-      if FileManager.default.fileExists(atPath: url.path) {
-        try FileManager.default.removeItem(at: url)
+      let databaseURL = folder.appendingPathComponent("test.sqlite3")
+      if FileManager.default.fileExists(atPath: databaseURL.path) {
+        try FileManager.default.removeItem(at: databaseURL)
       }
-      print("\(url.path)")
-      indexer = try Indexer(try Connection(url.path))
+      print("\(databaseURL.path)")
+      indexer = try Indexer(try Connection(databaseURL.path))
+
+      let settingsURL = URL(fileURLWithPath: NSString(string: "~/.markdone.json").expandingTildeInPath)
+      let data = try Data(contentsOf: settingsURL)
+      settings = try JSONDecoder().decode(DropboxSettings.self, from: data)
     } catch {
       XCTFail(error.localizedDescription)
     }
@@ -114,10 +124,10 @@ class FullTextSearchTests: XCTestCase {
   }
 
   func testDropboxClient() {
-    let expectation = XCTestExpectation(description: "Download apple.com home page")
+    let expectation = XCTestExpectation(description: "Dropbox folder creation")
 
-    DropboxClientsManager.setupWithAppKeyDesktop("hdv7zm68wg4btzx")
-    let client = DropboxClient(accessToken: "")
+    DropboxClientsManager.setupWithAppKeyDesktop(settings.key)
+    let client = DropboxClient(accessToken: settings.token)
     client.files.createFolderV2(path: "/Markdone.test/account").response { response, error in
       if let response = response {
         print(response)
@@ -128,7 +138,7 @@ class FullTextSearchTests: XCTestCase {
     }
 
     wait(for: [expectation], timeout: 10.0)
-    
+
   }
 
   func testMarkdoneFolder() throws {
